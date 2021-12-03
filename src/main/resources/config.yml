@@ -1,0 +1,6 @@
+startup:
+  show-settings: true
+entity-lighting:
+  fire-ticks: 80
+  fire-charge: true
+  flint-and-steel: false

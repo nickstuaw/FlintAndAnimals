@@ -1,0 +1,16 @@
+name: FlintAndAnimals
+version: '${project.version}'
+main: xyz.nsgn.flintandanimals.FlintAndAnimals
+api-version: 1.17
+authors: [ nsgw ]
+commands:
+  reloadflintandanimals:
+    description: Reload the FlintAndAnimals plugin.
+    default: op
+permissions:
+  flintandanimals.reload:
+    description: Reload the FlintAndAnimals plugin.
+    default: op
+  flintandanimals.use:
+    description: Use mob/player lighting.
+    default: not op
