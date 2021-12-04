@@ -1,8 +1,7 @@
 # FlintAndAnimals
 Click on a player or a mob to set it on fire, instead of needing them to walk into your fire.
 
-1.17.1 +
-(Tested in 1.18)
+(Tested in 1.18 and 1.8.8)
 
 ### Commands
 `/reloadflintandanimals` - Reload the plugin.
