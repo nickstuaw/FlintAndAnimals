@@ -56,7 +56,7 @@ public final class FlintAndAnimals extends JavaPlugin implements Listener, Comma
         if(!sender.hasPermission("flintandanimals.reload")) return true;
         reloadConfig();
         updateSettings();
-        sender.sendMessage(ChatColor.DARK_GREEN + "Reloaded!" +
+        sender.sendMessage(ChatColor.DARK_GREEN + "Reloaded config!" +
                 "\n" + ChatColor.YELLOW + fireTicks + " fire ticks" + ChatColor.DARK_GREEN +
                 "\nFlint & steel " + (flintAndSteel ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled") + ChatColor.DARK_GREEN +
                 "\nFire charge " + (fireCharge ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
