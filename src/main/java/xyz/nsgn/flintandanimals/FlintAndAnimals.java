@@ -4,14 +4,18 @@ import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 public final class FlintAndAnimals extends JavaPlugin implements Listener, CommandExecutor {
@@ -68,19 +72,54 @@ public final class FlintAndAnimals extends JavaPlugin implements Listener, Comma
 
     @EventHandler
     public void onLightEvent(PlayerInteractEntityEvent e) {
-        ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
-        Material mat = item.getType();
-        if(!(usingFireCharge(mat) || usingFlintAndSteel(mat))) return;
-        if(!e.getPlayer().hasPermission("flintandanimals.use")) return;
-        if(e.getRightClicked() instanceof LivingEntity) {
-            if(e.getRightClicked().getFireTicks() > 0) return;
-            e.getRightClicked().setFireTicks(fireTicks);
-            e.getPlayer().getWorld().playSound(e.getRightClicked().getLocation(), Sound.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 10f, 1f);
-            if(e.getPlayer().getGameMode().equals(GameMode.CREATIVE)) return;
-            if(mat.equals(Material.FIRE_CHARGE) ){
-                item.setAmount(item.getAmount() - 1);
-                e.getPlayer().getInventory().setItemInMainHand(item);
+        try
+        {
+            ItemStack item = (ItemStack) getVersionCompatibleGetMethod().invoke(e.getPlayer().getInventory());
+            Material mat = item.getType();
+            if(!(usingFireCharge(mat) || usingFlintAndSteel(mat))) return;
+            if(!e.getPlayer().hasPermission("flintandanimals.use")) return;
+            if(e.getRightClicked() instanceof LivingEntity) {
+                if(e.getRightClicked().getFireTicks() > 0) return;
+                e.getRightClicked().setFireTicks(fireTicks);
+                e.getPlayer().getWorld().playSound(e.getRightClicked().getLocation(), Sound.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 10f, 1f);
+                if(e.getPlayer().getGameMode().equals(GameMode.CREATIVE)) return;
+                if(mat.equals(Material.FIRE_CHARGE) ){
+                    item.setAmount(item.getAmount() - 1);
+                    getVersionCompatibleSetMethod().invoke(e.getPlayer().getInventory(), item);
+                }
             }
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException ignored) {
+
+        }
+
+
+    }
+
+    /**
+     * Gets the version compatible getItemInHand method
+     * @return the method
+     * @throws NoSuchMethodException ignored
+     */
+    public Method getVersionCompatibleGetMethod() throws NoSuchMethodException {
+        try
+        {
+            return PlayerInventory.class.getMethod("getItemInMainHand");
+        } catch (NoSuchMethodException e) {
+            return PlayerInventory.class.getMethod("getItemInHand");
+        }
+    }
+
+    /**
+     * Gets the version compatible setItemInHand method
+     * @return the method
+     * @throws NoSuchMethodException ignored
+     */
+    public Method getVersionCompatibleSetMethod() throws NoSuchMethodException {
+        try
+        {
+            return PlayerInventory.class.getMethod("setItemInMainHand", ItemStack.class);
+        } catch (NoSuchMethodException e) {
+            return PlayerInventory.class.getMethod("setItemInHand", ItemStack.class);
         }
     }
 }
