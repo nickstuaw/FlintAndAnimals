@@ -4,7 +4,6 @@ import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,7 +21,7 @@ public final class FlintAndAnimals extends JavaPlugin implements Listener, Comma
 
     private int fireTicks;
 
-    private boolean fireCharge, flintAndSteel;
+    private boolean fireCharge, flintAndSteel, permissionRequired;
 
     @Override
     public void onEnable() {
@@ -45,13 +44,11 @@ public final class FlintAndAnimals extends JavaPlugin implements Listener, Comma
         fireTicks = getConfig().getInt("entity-lighting.fire-ticks");
         fireCharge = getConfig().getBoolean("entity-lighting.fire-charge");
         flintAndSteel = getConfig().getBoolean("entity-lighting.flint-and-steel");
+        permissionRequired = getConfig().getBoolean("entity-lighting.permission-required");
     }
 
     private boolean usingFlintAndSteel(Material mat) {
         return flintAndSteel && mat.equals(Material.FLINT_AND_STEEL);
-    }
-    private boolean usingFireCharge(Material mat) {
-        return fireCharge && mat.equals(Material.FIRE_CHARGE);
     }
 
     @Override
@@ -76,14 +73,18 @@ public final class FlintAndAnimals extends JavaPlugin implements Listener, Comma
         {
             ItemStack item = (ItemStack) getVersionCompatibleGetMethod().invoke(e.getPlayer().getInventory());
             Material mat = item.getType();
-            if(!(usingFireCharge(mat) || usingFlintAndSteel(mat))) return;
-            if(!e.getPlayer().hasPermission("flintandanimals.use")) return;
+            if(!(isFireCharge(mat) || usingFlintAndSteel(mat))) return;
+            if(permissionRequired) {
+                if (!e.getPlayer().hasPermission("flintandanimals.use")) return;
+            }
             if(e.getRightClicked() instanceof LivingEntity) {
                 if(e.getRightClicked().getFireTicks() > 0) return;
                 e.getRightClicked().setFireTicks(fireTicks);
-                e.getPlayer().getWorld().playSound(e.getRightClicked().getLocation(), Sound.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 10f, 1f);
+                if(Bukkit.getVersion().contains("1.18")) {
+                    e.getPlayer().getWorld().playSound(e.getRightClicked().getLocation(), Sound.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 10f, 1f);
+                }
                 if(e.getPlayer().getGameMode().equals(GameMode.CREATIVE)) return;
-                if(mat.equals(Material.FIRE_CHARGE) ){
+                if(isFireCharge(mat)){
                     item.setAmount(item.getAmount() - 1);
                     getVersionCompatibleSetMethod().invoke(e.getPlayer().getInventory(), item);
                 }
@@ -121,5 +122,14 @@ public final class FlintAndAnimals extends JavaPlugin implements Listener, Comma
         } catch (NoSuchMethodException e) {
             return PlayerInventory.class.getMethod("setItemInHand", ItemStack.class);
         }
+    }
+
+    /**
+     * Checks the material regardless of the version used.
+     * @param mat The material to check.
+     * @return Whether the material is a fire charge.
+     */
+    public boolean isFireCharge(Material mat) {
+        return mat.toString().equals("FIRE_CHARGE") || mat.toString().equals("FIREBALL");
     }
 }
