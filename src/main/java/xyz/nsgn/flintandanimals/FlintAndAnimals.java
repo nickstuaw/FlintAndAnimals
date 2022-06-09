@@ -18,10 +18,15 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 public final class FlintAndAnimals extends JavaPlugin implements Listener, CommandExecutor {
+    private final String prefix = "[F&A] ";
 
     private int fireTicks;
 
     private boolean fireCharge, flintAndSteel, permissionRequired;
+
+    private void log(String s) {
+        getLogger().info(prefix + s);
+    }
 
     @Override
     public void onEnable() {
@@ -29,12 +34,13 @@ public final class FlintAndAnimals extends JavaPlugin implements Listener, Comma
         saveDefaultConfig();
         updateSettings();
         if(getConfig().getBoolean("startup.show-settings")) {
-            getLogger().info(ChatColor.GREEN + "FlintAndAnimals" + ChatColor.DARK_GREEN + " by nsgw");
-            getLogger().info(ChatColor.DARK_GREEN + "Set players and mobs on fire with one click.");
-            getLogger().info(ChatColor.DARK_GREEN + "Loaded!");
-            getLogger().info(ChatColor.YELLOW + "" + fireTicks + " fire ticks");
-            getLogger().info(ChatColor.DARK_GREEN + "Flint & steel " + (flintAndSteel ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
-            getLogger().info(ChatColor.DARK_GREEN + "Fire charge " + (fireCharge ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
+            String version = "1.2";
+            log(ChatColor.GREEN + "FlintAndAnimals v" + version + ChatColor.DARK_GREEN + " by nsgw");
+            log(ChatColor.DARK_GREEN + "Set players and mobs on fire with one click.");
+            log(ChatColor.DARK_GREEN + "Loaded!");
+            log(ChatColor.YELLOW + "" + fireTicks + " fire ticks");
+            log(ChatColor.DARK_GREEN + "Flint & steel " + (flintAndSteel ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
+            log(ChatColor.DARK_GREEN + "Fire charge " + (fireCharge ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
         }
         Objects.requireNonNull(getCommand("reloadflintandanimals")).setExecutor(this);
         Bukkit.getPluginManager().registerEvents(this, this);
@@ -56,7 +62,7 @@ public final class FlintAndAnimals extends JavaPlugin implements Listener, Comma
         if(!sender.hasPermission("flintandanimals.reload")) return true;
         reloadConfig();
         updateSettings();
-        sender.sendMessage(ChatColor.DARK_GREEN + "Reloaded config!" +
+        sender.sendMessage(ChatColor.DARK_GREEN + prefix + "Reloaded config!" +
                 "\n" + ChatColor.YELLOW + fireTicks + " fire ticks" + ChatColor.DARK_GREEN +
                 "\nFlint & steel " + (flintAndSteel ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled") + ChatColor.DARK_GREEN +
                 "\nFire charge " + (fireCharge ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
