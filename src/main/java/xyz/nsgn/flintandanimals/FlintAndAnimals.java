@@ -34,7 +34,7 @@ public final class FlintAndAnimals extends JavaPlugin implements Listener, Comma
         saveDefaultConfig();
         updateSettings();
         if(getConfig().getBoolean("startup.show-settings")) {
-            String version = "1.2";
+            String version = "1.1";
             log(ChatColor.GREEN + "FlintAndAnimals v" + version + ChatColor.DARK_GREEN + " by nsgw");
             log(ChatColor.DARK_GREEN + "Set players and mobs on fire with one click.");
             log(ChatColor.DARK_GREEN + "Loaded!");
